@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #888888;
+    font-family: Arial, sans-serif;
+  }
+
+  /* Main menu */
+  #menu {
+    padding: 20px;
+    overflow-y: auto;
+    height: 100vh;
+  }
+
+  #menu h1 {
+    margin-top: 0;
+  }
+
+  #menu li {
+    margin: 8px 0;
+  }
+
+  #menu a {
+    color: #0000ee;
+  }
+
+  /* Game screen */
+  #game {
+    display: none;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Large game window */
+  #gameFrame {
+    display: block;
+    width: 100%;
+    height: calc(100vh - 50px);
+    border: none;
+    background: #000;
+  }
+
+  /* Bottom controls */
+  #controls {
+    height: 50px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 10px;
+    background-color: #666666;
+  }
+
+  #aspectRatioContainer {
+    display: none;
+    color: white;
+  }
+
+  #aspectRatioCheckbox {
+    vertical-align: middle;
+  }
+
+  #backButton {
+    padding: 7px 14px;
+    cursor: pointer;
+  }
+</style>
+</head>
+
+<body>
+
+<div id="menu">
+  <h1>Men in Dead Collection</h1>
+  <p>Select a game to play:</p>
+
+  <ul>
+    <li><a href="#" onclick="loadGame('https://play.fancade.com/60A016FD5C08341B', true); return false;">Men in dead (Classic games)</a></li>
+    <li><a href="#" onclick="loadGame('https://play.fancade.com/6367D28171FACA6E', true); return false;">Men in dead Extras</a></li>
+    <li><a href="#" onclick="loadGame('https://play.fancade.com/639CE6A3B27E6C36', false); return false;">Men in dead legacy season 1</a></li>
+    <li><a href="#" onclick="loadGame('https://play.fancade.com/63C2E93E63189A2D', false); return false;">Men in dead legacy season 2</a></li>
+    <li><a href="#" onclick="loadGame('https://play.fancade.com/63F3D6D599DA9593', false); return false;">Men in dead legacy season 3</a></li>
+    <li><a href="#" onclick="loadGame('https://play.fancade.com/6413A0EAFEC15748', false); return false;">Men in dead legacy season 4</a></li>
+    <li><a href="#" onclick="loadGame('https://play.fancade.com/642CB7ACF8F2E031', false); return false;">Men in dead legacy season 5</a></li>
+    <li><a href="#" onclick="loadGame('https://archive.org/details/08-b-7-e-054-b-02-a-4791-974-e-8253-eda-52-bb-7', false); return false;">Men in dead shorts</a></li>
+    <li><a href="#" onclick="loadGame('https://play.fancade.com/647BBD2D94B5EF12', false); return false;">Men in dead Undead Knight</a></li>
+    <li><a href="#" onclick="loadGame('https://archive.org/details/08-b-7-e-054-b-02-a-4791-974-e-8253-eda-52-bb-7', false); return false;">Men in dead: The movie</a></li>
+    <li><a href="#" onclick="loadGame('https://play.fancade.com/647BBD2D94B5EF12', false); return false;">Men in dead: Multiplayer Tombs</a></li>
+    <li><a href="#" onclick="loadGame('https://play.fancade.com/647BBD2D94B5EF12', false); return false;">Men in Dead: 1999</a></li>
+    <li><a href="#" onclick="loadGame('https://play.fancade.com/6696AFFA869AE2CC', false); return false;">Men in Dead: Perfidious</a></li>
+    <li><a href="#" onclick="loadGame('https://play.fancade.com/67B3559931BF615A', false); return false;">Men in Dead: Silent Death</a></li>
+    <li><a href="#" onclick="loadGame('https://play.fancade.com/6806B3D2054A162A', false); return false;">Men in Dead: Heartless</a></li>
+    <li><a href="#" onclick="loadGame('https://play.fancade.com/68812DBF69A5D71E', false); return false;">Men in Dead: Train to Europe</a></li>
+    <li><a href="#" onclick="loadGame('https://play.fancade.com/69016EE8CAB2A9DD', false); return false;">Men in Dead: Rapture</a></li>
+    <li><a href="#" onclick="loadGame('https://play.fancade.com/69BF397A4AC867BE', false); return false;">Men in Dead: From Plants With Love</a></li>
+
+    <h2>Extras</h2>
+
+    <li><a href="#" onclick="loadGame('https://docs.google.com/document/d/1FwHpAZeStfXh69obhScfr8dXGrr17mLFGpIehucCmW8/edit?usp=drivesdk', false); return false;">Men in Dead: Rapture Manual</a></li>
+    <li><a href="#" onclick="loadGame('https://docs.google.com/document/d/15Z6aEspnSPQ-YxesQU1UoUCw7cGbOeuTqiFVIEiYzOM/edit?usp=drivesdk', false); return false;">Men in Dead: From Plants With Love Manual</a></li>
+  </ul>
+</div>
+
+<!-- Game -->
+<div id="game">
+
+  <iframe
+    id="gameFrame"
+    allowfullscreen>
+  </iframe>
+
+  <div id="controls">
+
+    <div id="aspectRatioContainer">
+      <label>
+        <input type="checkbox" id="aspectRatioCheckbox">
+        Original Aspect Ratio
+      </label>
+    </div>
+
+    <button id="backButton" onclick="returnToMenu()">
+      Back to Menu
+    </button>
+
+  </div>
+
+</div>
+
+<script>
+  const menuDiv = document.getElementById("menu");
+  const gameDiv = document.getElementById("game");
+  const gameFrame = document.getElementById("gameFrame");
+
+  const aspectRatioContainer =
+    document.getElementById("aspectRatioContainer");
+
+  const aspectRatioCheckbox =
+    document.getElementById("aspectRatioCheckbox");
+
+  function loadGame(url, applyAspectRatio) {
+
+    menuDiv.style.display = "none";
+    gameDiv.style.display = "block";
+
+    gameFrame.src = url;
+
+    if (applyAspectRatio) {
+      aspectRatioContainer.style.display = "block";
+    } else {
+      aspectRatioContainer.style.display = "none";
+    }
+
+    aspectRatioCheckbox.checked = false;
+  }
+
+  function returnToMenu() {
+
+    gameFrame.src = "";
+
+    gameDiv.style.display = "none";
+    menuDiv.style.display = "block";
+
+    aspectRatioCheckbox.checked = false;
+  }
+</script>
+
+</body>
+</html>
